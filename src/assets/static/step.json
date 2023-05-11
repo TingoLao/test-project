@@ -1,0 +1,54 @@
+{
+	"steps":[
+	{
+		"step1":{
+			"title":"Generate Welcome Email",
+			"service":"shopflex",
+			"description":"Generate a welcome email using shopflex.generate_email method with the given subject, from, to, and body_text.",
+			"inputs":[
+				{"name":"subject","type":"text","value":"Welcome to our platform"},
+				{"name":"from","type":"email","value":"info@example.com"},
+				{"name":"to","type":"email","value":""},
+				{"name":"body_text","type":"textarea","value":"Hello, \n\nWe are excited to have you on board. Please let us know if you have any questions or need assistance.\n\nBest Regards,\nThe Team"}
+			],
+			"js_code":"const email = shopflex.generate_email({subject: '{{subject}}', from: '{{from}}', to: '{{to}}', body_text: '{{body_text}}'});",
+			"js_test_code":""
+		}
+	},
+	{
+		"step2":{
+			"title":"Get Users by Tags",
+			"service":"shopflex",
+			"description":"Query users with the tags=ai using shopflex.get_users_by_tags method and store the result in a variable.",
+			"inputs":[
+				{"name":"tags","type":"text","value":"ai"},
+				{"name":"limit","type":"number","value":"100"}
+			],
+			"js_code":"const users = await shopflex.get_users_by_tags({tags: '{{tags}}', limit: {{limit}}});",
+			"js_test_code":""
+		}
+	},
+	{
+		"step3":{
+			"title":"Send Emails to Users",
+			"service":"sendgrid",
+			"description":"Send the welcome email to the users obtained in step2 using sendgrid.send_email method.",
+			"inputs":[],
+			"js_code":"if (users.length > 0) { for (const user of users) { sendgrid.send_email({subject: email.subject, from: email.from, to: user.email, body_text: email.body_text}); } }",
+			"js_test_code":""
+		}
+	},
+	{
+		"step4":{
+			"title":"Update User Tags",
+			"service":"shopflex",
+			"description":"Update the tags of the users obtained in step2 with tags=over using shopflex.update_user_tags_by_ids method.",
+			"inputs":[
+				{"name":"tags","type":"text","value":"over"}
+			],
+			"js_code":"if (users.length > 0) { const userIds = users.map(user => user.id); await shopflex.update_user_tags_by_ids({ids: userIds, tags: '{{tags}}'}); }",
+			"js_test_code":""
+		}
+	}],
+	"all_code":"const email = shopflex.generate_email({subject: '{{subject}}', from: '{{from}}', to: '{{to}}', body_text: '{{body_text}}'});\nconst users = await shopflex.get_users_by_tags({tags: '{{tags}}', limit: {{limit}}});\nif (users.length > 0) { for (const user of users) { sendgrid.send_email({subject: email.subject, from: email.from, to: user.email, body_text: email.body_text}); } }\nif (users.length > 0) { const userIds = users.map(user => user.id); await shopflex.update_user_tags_by_ids({ids: userIds, tags: '{{tags}}'}); }"
+}
